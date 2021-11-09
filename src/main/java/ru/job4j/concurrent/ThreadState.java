@@ -7,7 +7,8 @@ public class ThreadState {
         first.start();
         second.start();
         while (first.getState() != Thread.State.TERMINATED || second.getState() != Thread.State.TERMINATED) {
-            System.out.println("Both threads were finished");
+            System.out.println("Threads are working");
         }
+        System.out.println("Both threads were finished");
     }
 }
