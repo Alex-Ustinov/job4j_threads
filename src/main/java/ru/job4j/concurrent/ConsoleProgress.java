@@ -6,8 +6,10 @@ public class ConsoleProgress implements Runnable {
     public void run() {
         String flag = "\\";
         while (!Thread.currentThread().isInterrupted()) {
-            System.out.println("Loading ... " + flag);
             try {
+                Thread.sleep(500);
+                System.out.print("\r load: " + flag);
+
                 if (flag.equals("\\")) {
                     flag = "|";
                 } else if (flag.equals("|")) {
@@ -15,7 +17,6 @@ public class ConsoleProgress implements Runnable {
                 } else if (flag.equals("/")) {
                     flag = "\\";
                 }
-                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

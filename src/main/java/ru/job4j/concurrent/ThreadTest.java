@@ -7,8 +7,8 @@ public class ThreadTest {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
+            progress.interrupt();
             e.printStackTrace();
         }
-        progress.interrupt();
     }
 }
