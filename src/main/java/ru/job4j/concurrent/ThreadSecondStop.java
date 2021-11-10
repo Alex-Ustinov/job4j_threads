@@ -23,6 +23,6 @@ public class ThreadSecondStop {
         System.out.println("^^^^^^^ " + Thread.currentThread().getName());
         progress.interrupt();
         System.out.println("&&&&&& " + Thread.currentThread().getName());
-        //progress.join();
+        progress.join();
     }
 }
