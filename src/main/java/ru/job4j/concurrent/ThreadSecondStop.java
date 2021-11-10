@@ -15,7 +15,7 @@ public class ThreadSecondStop {
                     }
                 }
         );
-        
+
         progress.start();
         Thread.sleep(1000);
         progress.interrupt();
