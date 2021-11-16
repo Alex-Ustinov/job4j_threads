@@ -1,2 +1,7 @@
-package ru.job4j.thread;public interface Parser {
+package ru.job4j.thread;
+
+import java.util.function.Predicate;
+
+public interface Parser {
+    public String getContent ();
 }

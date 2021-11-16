@@ -1,40 +1,42 @@
 package ru.job4j.thread;
 
 import java.io.*;
+import java.util.function.Predicate;
 
-public class ParseFile {
+public class ParseFile implements Parser, ParserSave {
     private final File file;
 
-    ParseFile(File file) {
+    Parse parse;
+
+    ParseFile(final File file, Parse parse) {
         this.file = file;
+        this.parse = parse;
     }
 
-    public String getContent() throws IOException {
-        InputStream i = new FileInputStream(file);
+    public String getContent() {
         String output = "";
-        int data;
-        while ((data = i.read()) > 0) {
-            output += (char) data;
-        }
-        return output;
-    }
-
-    public String getContentWithoutUnicode() throws IOException {
-        InputStream i = new FileInputStream(file);
-        String output = "";
-        int data;
-        while ((data = i.read()) > 0) {
-            if (data < 0x80) {
-                output += (char) data;
+        try (BufferedInputStream i = new BufferedInputStream(new FileInputStream(file))) {
+            int data;
+            while ((data = i.read()) > 0) {
+                Character character = (char) data;
+                if (parse.execute(character)) {
+                    output += (char) data;
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return output;
     }
 
-    public void saveContent(String content) throws IOException {
-        OutputStream o = new FileOutputStream(file);
-        for (int i = 0; i < content.length(); i += 1) {
-            o.write(content.charAt(i));
+    public void saveContent(String content) {
+        try (BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(file))) {
+            for (int i = 0; i < content.length(); i += 1) {
+                o.write(content.charAt(i));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 }
