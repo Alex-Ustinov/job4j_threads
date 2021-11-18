@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Timer;
 
 public class Wget implements Runnable {
     private final String url;
@@ -14,29 +13,35 @@ public class Wget implements Runnable {
         this.url = url;
         this.speed = speed;
     }
+
+    public static boolean validateArguments(String[] arguments) throws Exception {
+        if (arguments.length != 2) {
+            throw new Exception("Array arguments does not contain enough arguments");
+        }
+        return true;
+    }
+
     @Override
     public void run() {
+        String[] partUrls = url.split("/");
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream("pom_tmp.xml")) {
+             FileOutputStream fileOutputStream = new FileOutputStream(partUrls[partUrls.length - 1])) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
             long bytesWrote = 0;
-            long deltaTime = System.nanoTime();
+            long deltaTime = System.currentTimeMillis();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                bytesWrote = bytesWrote + in.read();
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+                bytesWrote = bytesWrote + bytesRead;
                 if (bytesWrote >= speed) {
-                    System.out.println("bytesWrote = " + bytesWrote);
-                    int spentTime = (int) System.nanoTime() / 1000000 - (int) deltaTime / 1000000 ;
-                    System.out.println("spentTime = " + spentTime);
+                    int spentTime = (int) System.currentTimeMillis() - (int) deltaTime;
                     if (spentTime < 1000) {
                         int sleep = 1000 - spentTime;
-                        System.out.println("Sleep = " + sleep);
-                        Thread.sleep(1000 - spentTime);
+                        Thread.sleep(sleep);
                     }
-                    deltaTime = System.nanoTime();
+                    deltaTime = System.currentTimeMillis();
                     bytesWrote = 0;
                 }
-                fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -46,6 +51,11 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        try {
+            validateArguments(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String url = args[0];
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget(url, speed));
