@@ -16,20 +16,28 @@ public class Wget implements Runnable {
     }
     @Override
     public void run() {
-        long startTime = System.nanoTime();
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream("pom_tmp.xml")) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
+            long bytesWrote = 0;
+            long deltaTime = System.nanoTime();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                bytesWrote = bytesWrote + in.read();
+                if (bytesWrote >= speed) {
+                    System.out.println("bytesWrote = " + bytesWrote);
+                    int spentTime = (int) System.nanoTime() / 1000000 - (int) deltaTime / 1000000 ;
+                    System.out.println("spentTime = " + spentTime);
+                    if (spentTime < 1000) {
+                        int sleep = 1000 - spentTime;
+                        System.out.println("Sleep = " + sleep);
+                        Thread.sleep(1000 - spentTime);
+                    }
+                    deltaTime = System.nanoTime();
+                    bytesWrote = 0;
+                }
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
-            long estimatedTime = System.nanoTime() - startTime;
-            int spentTime = (int) estimatedTime  / 1000000;
-            int waitTime = speed - spentTime;
-            System.out.println("spentTime = " + spentTime);
-            System.out.println("waitTime = " + waitTime);
-            Thread.sleep(waitTime);
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             e.printStackTrace();
