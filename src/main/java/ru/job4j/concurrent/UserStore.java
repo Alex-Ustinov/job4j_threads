@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserStore {
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
 
+@ThreadSafe
+public class UserStore {
+    @GuardedBy("this")
     private volatile List<User> storage = new ArrayList();
 
     public boolean add (User user) {
