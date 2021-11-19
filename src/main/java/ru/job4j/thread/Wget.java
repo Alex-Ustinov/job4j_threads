@@ -14,7 +14,7 @@ public class Wget implements Runnable {
         this.speed = speed;
     }
 
-    public static void validateArguments(String[] arguments) throws Exception {
+    public static void validateArguments(String[] arguments) {
         try {
             if (arguments.length != 2) {
                 throw new Exception("Array arguments does not contain enough arguments");
