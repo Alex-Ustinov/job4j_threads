@@ -1,8 +1,6 @@
 package ru.job4j.concurrent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
@@ -10,13 +8,13 @@ import net.jcip.annotations.ThreadSafe;
 @ThreadSafe
 public class UserStore {
     @GuardedBy("this")
-    private volatile List<User> storage = new ArrayList();
+    private Map<Integer, User> storage = new HashMap<>();
 
     public boolean add (User user) {
-        if (!storage.contains(user)) {
+        if (!storage.containsKey(user.getId())) {
             synchronized (this) {
-                if (!storage.contains(user)) {
-                    storage.add(user);
+                if (!storage.containsKey(user.getId())) {
+                    storage.put(user.getId(), user);
                 }
             }
         }
@@ -38,10 +36,11 @@ public class UserStore {
     }
 
     public boolean delete(User user) {
-        if (storage.contains(user)) {
+        if (!storage.containsKey(user.getId())) {
             synchronized (this) {
-                if (storage.contains(user)) {
-                    return storage.remove(user);
+                if (!storage.containsKey(user.getId())) {
+                    storage.remove(user.getId());
+                    return true;
                 }
             }
             return false;
@@ -50,9 +49,10 @@ public class UserStore {
     }
 
     public Optional<User> findUser(Integer id) {
-        return storage.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst();
+        User findUser = storage.entrySet().stream()
+                .filter(user -> user.getKey() == id)
+                .findFirst().get().getValue();
+        return new Optional(findUser);
     }
 
     public void transfer(int fromId, int toId, int amount) throws Exception {
