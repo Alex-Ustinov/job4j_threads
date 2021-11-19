@@ -11,12 +11,11 @@ public class SingleLockList<T> implements Iterable<T> {
     private final List<T> list;
 
     public SingleLockList(List<T> list) {
-        this.list = (List) list.clone();
+        this.list = (List) list;
     }
 
     public void add(T value) {
         synchronized (this) {
-            //list.add(new Object<T>(value));
         }
     }
 
@@ -25,10 +24,10 @@ public class SingleLockList<T> implements Iterable<T> {
     }
 
     public List<T> copy (List<T> forCopy) {
-        synchronized () {
-            List<T> listCopy = new ArrayList<>();
-            forCopy.forEach(item -> new T ().getClass());
+        List<T> listCopy = new ArrayList<>();
+        synchronized (this) {
         }
+        return listCopy;
     }
 
     @Override
