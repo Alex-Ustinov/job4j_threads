@@ -14,11 +14,14 @@ public class Wget implements Runnable {
         this.speed = speed;
     }
 
-    public static boolean validateArguments(String[] arguments) throws Exception {
-        if (arguments.length != 2) {
-            throw new Exception("Array arguments does not contain enough arguments");
+    public static void validateArguments(String[] arguments) throws Exception {
+        try {
+            if (arguments.length != 2) {
+                throw new Exception("Array arguments does not contain enough arguments");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return true;
     }
 
     @Override
@@ -34,9 +37,9 @@ public class Wget implements Runnable {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
                 bytesWrote = bytesWrote + bytesRead;
                 if (bytesWrote >= speed) {
-                    int spentTime = (int) System.currentTimeMillis() - (int) deltaTime;
+                    long spentTime = System.currentTimeMillis() - deltaTime;
                     if (spentTime < 1000) {
-                        int sleep = 1000 - spentTime;
+                        long sleep = 1000 - spentTime;
                         Thread.sleep(sleep);
                     }
                     deltaTime = System.currentTimeMillis();
@@ -50,12 +53,8 @@ public class Wget implements Runnable {
         System.out.println("The file was downloaded");
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        try {
-            validateArguments(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws InterruptedException, Exception {
+        validateArguments(args);
         String url = args[0];
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget(url, speed));
