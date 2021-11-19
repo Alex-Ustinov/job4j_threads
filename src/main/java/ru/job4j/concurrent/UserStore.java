@@ -52,7 +52,7 @@ public class UserStore {
         User findUser = storage.entrySet().stream()
                 .filter(user -> user.getKey() == id)
                 .findFirst().get().getValue();
-        return new Optional(findUser);
+        return Optional.of(findUser);
     }
 
     public void transfer(int fromId, int toId, int amount) throws Exception {
