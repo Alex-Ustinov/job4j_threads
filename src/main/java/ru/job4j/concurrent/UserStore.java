@@ -10,63 +10,36 @@ public class UserStore {
     @GuardedBy("this")
     private Map<Integer, User> storage = new HashMap<>();
 
-    public boolean add (User user) {
-        if (!storage.containsKey(user.getId())) {
-            synchronized (this) {
-                if (!storage.containsKey(user.getId())) {
-                    storage.put(user.getId(), user);
-                }
-            }
-        }
-        return true;
+    public synchronized boolean add (User user) {
+        User result = storage.putIfAbsent(user.getId(), user);
+        return checkIdUser(user, result);
     }
-    public boolean update(User user) {
-        Optional<User> changedUser = findUser(user.getId());
-        if (changedUser.isPresent()) {
-            synchronized (this) {
-                if (changedUser.isPresent()) {
-                    delete(changedUser.get());
-                    add(user);
-                    return true;
-                }
-                return false;
-            }
-        }
-        return false;
+    public synchronized boolean update(User user) {
+        User result = storage.replace(user.getId(), user);
+        return checkIdUser(user, result);
     }
 
-    public boolean delete(User user) {
-        if (!storage.containsKey(user.getId())) {
-            synchronized (this) {
-                if (!storage.containsKey(user.getId())) {
-                    storage.remove(user.getId());
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
+    public synchronized boolean delete(User user) {
+        User result = storage.remove(user.getId());
+        return checkIdUser(user, result);
     }
 
-    public Optional<User> findUser(Integer id) {
-        User findUser = storage.entrySet().stream()
-                .filter(user -> user.getKey() == id)
-                .findFirst().get().getValue();
-        return Optional.of(findUser);
+    public boolean checkIdUser(User initialUser, User receiveUser) {
+        return initialUser.getId() == receiveUser.getId();
     }
 
     public void transfer(int fromId, int toId, int amount) throws Exception {
-        Optional<User> fromUserOption = findUser(fromId);
-        Optional<User> toUserOption = findUser(toId);
-        if (fromUserOption.isPresent() && toUserOption.isPresent()) {
-            User fromUser = fromUserOption.get();
-            User toUser = toUserOption.get();
+        User fromUser = storage.get(fromId);
+        User toUser = storage.get(fromId);
             synchronized (fromUser) {
                 synchronized (toUser) {
-                    fromUser.minusAmount(amount);
-                    toUser.plusAmount(amount);
+                    if (fromUser.getAmount() <= 0 || fromUser.getAmount() - amount < 0) {
+                        throw new Exception("User does not have enough money");
+                    }
+                    toUser.setAmount(toUser.getAmount() + amount);
+                    fromUser.setAmount(fromUser.getAmount() - amount);
+
                 }
             }
-        }
     }
 }

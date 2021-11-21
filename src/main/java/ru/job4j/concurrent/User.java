@@ -29,15 +29,4 @@ public class User {
         this.amount = amount;
     }
 
-    public void plusAmount(Integer money) {
-            amount = amount + money;
-    }
-
-    public boolean minusAmount(Integer money) throws Exception {
-        if (amount <= 0) {
-            throw new Exception("User does not have enough money");
-        }
-        amount = amount - money;
-        return true;
-    }
 }
