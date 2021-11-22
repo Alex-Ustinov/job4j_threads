@@ -19,11 +19,10 @@ public class SimpleBlockingQueue<T> {
     public void offer(T value) {
         synchronized (value) {
             queue.add(value);
-            capacity++;
             this.notifyAll();
         }
         synchronized (this) {
-            while (queue.size() >= capacity) {
+            while (queue.size() < capacity) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
@@ -45,7 +44,6 @@ public class SimpleBlockingQueue<T> {
         }
         synchronized (this) {
             if (queue.size() > 0) {
-                capacity--;
                 return queue.poll();
             }
         }
