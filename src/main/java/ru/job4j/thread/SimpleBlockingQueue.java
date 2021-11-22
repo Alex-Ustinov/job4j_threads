@@ -16,37 +16,26 @@ public class SimpleBlockingQueue<T> {
         this.capacity = capacity;
     }
 
-    public void offer(T value) {
-        synchronized (value) {
-            queue.add(value);
-            this.notifyAll();
-        }
-        synchronized (this) {
-            while (queue.size() < capacity) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-    }
-
-    public T poll() {
-        synchronized (Thread.currentThread()) {
+    public synchronized void offer(T value) {
+        while (queue.size() >= capacity) {
             try {
-                while (queue.size() == 0) {
-                    Thread.currentThread().wait();
-                }
+                this.wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        synchronized (this) {
-            if (queue.size() > 0) {
-                return queue.poll();
+        queue.add(value);
+        this.notifyAll();
+    }
+
+    public synchronized T poll() {
+        try {
+            while (queue.size() == 0) {
+                this.wait();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-        return null;
+        return queue.poll();
     }
 }
