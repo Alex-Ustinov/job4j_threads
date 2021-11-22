@@ -10,8 +10,7 @@ import static org.junit.Assert.*;
 public class SingleLockListTest {
     @Test
     public void add() throws InterruptedException {
-
-        SingleLockList<Integer> list = new SingleLockList<>(Arrays.asList());
+        SingleLockList<Integer> list = new SingleLockList<>(Arrays.asList(3,5));
         Thread first = new Thread(() -> list.add(1));
         Thread second = new Thread(() -> list.add(2));
         first.start();
