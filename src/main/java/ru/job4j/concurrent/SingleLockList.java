@@ -12,7 +12,7 @@ public class SingleLockList<T> implements Iterable<T> {
     private final List<T> list;
 
     public SingleLockList(List<T> list) {
-        this.list = (List) copy(list);
+        this.list = copy(list);
     }
 
     public synchronized void add(T value) {
@@ -25,8 +25,8 @@ public class SingleLockList<T> implements Iterable<T> {
 
     public synchronized List<T> copy (List<T> forCopy) {
         List<T> listCopy = new ArrayList<>();
-        while (forCopy.iterator().hasNext()) {
-            listCopy.add(forCopy.iterator().next());
+        for (T t : forCopy) {
+            listCopy.add(t);
         }
         return listCopy;
     }

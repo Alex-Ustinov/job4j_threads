@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class SingleLockListTest {
     @Test
     public void add() throws InterruptedException {
-        SingleLockList<Integer> list = new SingleLockList<>(Arrays.asList(3,5));
+        SingleLockList<Integer> list = new SingleLockList<>(Arrays.asList());
         Thread first = new Thread(() -> list.add(1));
         Thread second = new Thread(() -> list.add(2));
         first.start();
@@ -19,5 +19,6 @@ public class SingleLockListTest {
         second.join();
         Set<Integer> rsl = new TreeSet<>();
         list.iterator().forEachRemaining(rsl::add);
+        assertThat(rsl, is(Set.of(1, 2)));
     }
 }
