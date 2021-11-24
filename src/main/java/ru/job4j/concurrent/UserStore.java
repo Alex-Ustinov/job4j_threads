@@ -21,17 +21,17 @@ public class UserStore {
         return storage.remove(user.getId());
     }
 
-    public synchronized void transfer(int fromId, int toId, int amount) throws Exception {
+    public synchronized boolean transfer(int fromId, int toId, int amount) throws Exception {
         User fromUser = storage.get(fromId);
         User toUser = storage.get(fromId);
         if (fromUser != null && toUser != null) {
-            if (fromUser.getAmount() <= 0 || fromUser.getAmount() - amount < 0) {
-                throw new Exception("User does not have enough money");
-            }
             if (fromUser.getAmount() - amount >= 0) {
                 toUser.setAmount(toUser.getAmount() + amount);
                 fromUser.setAmount(fromUser.getAmount() - amount);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 }
