@@ -22,9 +22,10 @@ public class ParallelSearch {
                             queue.offer(index);
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                            e.printStackTrace();
                         }
                     }
+                    consumer.interrupt();
                 }
 
         ).start();
