@@ -28,7 +28,8 @@ public class SimpleBlockingQueue<T> {
         while (queue.size() == 0) {
             this.wait();
         }
+        T result = queue.poll();
         this.notifyAll();
-        return queue.poll();
+        return result;
     }
 }
