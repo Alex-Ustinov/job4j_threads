@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.job4j.concurrent.SingleLockList;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -38,5 +39,46 @@ public class SimpleBlockingQueueTest {
         second.join();
 
         assertThat(queue.poll(), is(3));
+    }
+
+    @Test
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final List<Integer> buffer = new ArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(5);
+        Thread producer = new Thread(
+                () -> {
+                    IntStream numbers = IntStream.range(0, 5);
+                    try {
+                        for (PrimitiveIterator.OfInt it = numbers.iterator(); it.hasNext(); ) {
+                            Integer in = it.next();
+                            queue.offer(in);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+        producer.start();
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.getQueue().isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            Integer i = queue.poll();
+                            System.out.println("I = " + i);
+                            buffer.add(i);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        consumer.start();
+        producer.join();
+        consumer.interrupt();
+        System.out.println(consumer.getState());
+        consumer.join();
+        System.out.println("! " + consumer.getState());
+        assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
     }
 }
