@@ -76,9 +76,10 @@ public class SimpleBlockingQueueTest {
         consumer.start();
         producer.join();
         consumer.interrupt();
-        System.out.println(consumer.getState());
         consumer.join();
+        System.out.println(consumer.getState());
         System.out.println("! " + consumer.getState());
         assertThat(buffer, is(Arrays.asList(0, 1, 2, 3, 4)));
     }
+
 }
