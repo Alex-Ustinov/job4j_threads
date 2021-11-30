@@ -15,7 +15,7 @@ public class CASCount {
                 throw new UnsupportedOperationException("Count is not impl.");
             }
             count.getAndSet(countInMoment + 1);
-        } while (count.get() == countInMoment + 1);
+        } while (!count.compareAndSet(countInMoment, countInMoment + 1));
     }
 
     public int get() {
