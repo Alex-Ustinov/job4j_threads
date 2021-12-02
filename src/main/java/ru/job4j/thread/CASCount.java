@@ -8,17 +8,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CASCount {
     private final AtomicReference<Integer> count = new AtomicReference<>();
 
-    CASCount(Integer count) {
+    public CASCount(Integer count) {
         this.count.getAndSet(count);
     }
 
     public void increment() {
-        Integer countInMoment = count.get();
+        Integer countInMoment;
         do {
-            if (countInMoment == 0) {
-                throw new UnsupportedOperationException("Count is not impl.");
-            }
-            count.getAndSet(countInMoment + 1);
+            countInMoment = count.get();
         } while (!count.compareAndSet(countInMoment, countInMoment + 1));
     }
 
