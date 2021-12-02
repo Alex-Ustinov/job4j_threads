@@ -21,6 +21,7 @@ public class Cache {
         do {
             memory.put(model.getId(), new Base(model.getId(), model.getVersion() + 1));
         } while (model.getVersion() + 1 == memory.get(model.getId()).getVersion());
+        return true;
     }
 
     public void  delete(Base model) {
