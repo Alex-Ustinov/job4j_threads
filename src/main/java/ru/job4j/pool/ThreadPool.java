@@ -25,6 +25,7 @@ public class ThreadPool {
                     Thread.currentThread().interrupt();
                 }
             });
+            thread.start();
             threads.add(thread);
         }
     }
@@ -46,5 +47,4 @@ public class ThreadPool {
             thread.interrupt();
         }
     }
-
 }
