@@ -30,16 +30,8 @@ public class ThreadPool {
         }
     }
 
-    public void work(Runnable job) {
-        for (Thread thread : threads) {
-            try {
-                while (!thread.isInterrupted()) {
-                    tasks.offer(job);
-                }
-            } catch (InterruptedException e) {
-                thread.interrupt();
-            }
-        }
+    public void work(Runnable job) throws InterruptedException {
+        tasks.offer(job);
     }
 
     public void shutdown() {
