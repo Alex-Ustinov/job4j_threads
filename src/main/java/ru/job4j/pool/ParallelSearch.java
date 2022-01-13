@@ -16,28 +16,33 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
         this.searchIndexFrom = searchIndexFrom;
         this.searchIndexTo = searchIndexTo;
     }
+    private Integer find() {
+        for (int i = searchIndexFrom; i <= searchIndexTo; i++) {
+            if (items[i].equals(item)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     @Override
     protected Integer compute() {
-        Integer result = -1;
         if (searchIndexTo - searchIndexFrom <= 10) {
-            for (int i = searchIndexFrom; i < searchIndexTo; i++) {
-                if (items[i] == item) {
-                    result = i;
-                    break;
-                }
-            }
-        } else {
-            Integer midl = (searchIndexFrom - searchIndexTo) / 2;
-            ParallelSearch parallelSearchFrom = new ParallelSearch(items, item, searchIndexFrom, midl);
-            ParallelSearch parallelSearchTo = new ParallelSearch(items, item, midl + 1, searchIndexTo);
-            parallelSearchFrom.fork();
-            parallelSearchTo.fork();
+            return find();
         }
-        return result;
+        Integer midl = (searchIndexFrom - searchIndexTo) / 2;
+        ParallelSearch parallelSearchFrom = new ParallelSearch(items, item, searchIndexFrom, midl);
+        ParallelSearch parallelSearchTo = new ParallelSearch(items, item, midl + 1, searchIndexTo);
+        parallelSearchFrom.fork();
+        parallelSearchTo.fork();
+
+        Integer searchFor = (Integer) parallelSearchFrom.join();
+        Integer searchTo = (Integer) parallelSearchTo.join();
+
+        return searchTo > searchFor ? searchTo : searchTo;
     }
     public Integer search() {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        return  forkJoinPool.invoke(new ParallelSearch<T>(items, item, 0 , items.length));
+        return  forkJoinPool.invoke(new ParallelSearch<T>(items, item, 0 , items.length - 1));
     }
 }
