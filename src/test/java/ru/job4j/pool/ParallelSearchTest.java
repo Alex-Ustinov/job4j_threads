@@ -12,7 +12,6 @@ public class ParallelSearchTest {
         for (int i = 0; i < 50; i++) {
             testArray[i] = i;
         }
-        ParallelSearch parallelSearch = new ParallelSearch(testArray, 34, 0, testArray.length - 1);
-        assertThat(parallelSearch.search(), is(-1));
+        assertThat(ParallelSearch.search(testArray, 34), is(-1));
     }
 }

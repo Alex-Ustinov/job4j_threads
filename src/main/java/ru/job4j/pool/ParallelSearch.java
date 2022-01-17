@@ -39,10 +39,10 @@ public class ParallelSearch<T> extends RecursiveTask<Integer> {
         Integer searchFor = (Integer) parallelSearchFrom.join();
         Integer searchTo = (Integer) parallelSearchTo.join();
 
-        return searchTo > searchFor ? searchTo : searchTo;
+        return searchTo > searchFor ? searchTo : searchFor;
     }
-    public Integer search() {
+    public static Integer search(Integer[] items, Integer item) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        return  forkJoinPool.invoke(new ParallelSearch<T>(items, item, 0 , items.length - 1));
+        return  forkJoinPool.invoke(new ParallelSearch<Integer>(items, item, 0 , items.length - 1));
     }
 }
