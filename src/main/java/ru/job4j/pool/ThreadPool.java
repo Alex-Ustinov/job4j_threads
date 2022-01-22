@@ -20,12 +20,8 @@ public class ThreadPool {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
                         tasks.poll().run();
-                        System.out.println("^^^" + Thread.currentThread().getName());
-                        System.out.println("^^^" + Thread.currentThread().getState());
                     }
                 } catch (InterruptedException e) {
-                    System.out.println(Thread.currentThread().getName());
-                    System.out.println(Thread.currentThread().getState());
                     Thread.currentThread().interrupt();
                 }
             });
@@ -41,13 +37,6 @@ public class ThreadPool {
     public void shutdown() {
         for (Thread thread : threads) {
             thread.interrupt();
-        }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        ThreadPool threadPool = new ThreadPool();
-        for (int i = 0; i < 10; i++) {
-            threadPool.work(() -> System.out.println(" !!"));
         }
     }
 }
